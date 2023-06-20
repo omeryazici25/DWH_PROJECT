@@ -23,3 +23,8 @@ models:
         tests:
           - unique
           - not_null
+  - name: team_details
+    columns:
+      - name: number
+        tests:
+          - is_even     

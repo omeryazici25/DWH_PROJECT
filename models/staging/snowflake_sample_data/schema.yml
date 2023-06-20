@@ -8,4 +8,11 @@ sources:
     tables:
       - name: store_sales
         description: 'Details about the sales in the store.'
+  - name: jaffle_shop
+    description: ' Source data of our jaffle shop'
+    database: raw
+    schema: JAFFLE_SHOP
+    tables:
+      - name: orders
+        description: 'Details about the sales orders in the jaffle store.'
         

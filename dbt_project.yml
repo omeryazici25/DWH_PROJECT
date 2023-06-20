@@ -6,6 +6,11 @@ name: 'DWH_PROJECT'
 version: '1.0.0'
 config-version: 2
 
+vars:
+  # The `start_date` variable will be accessible in all resources
+  current_champion: 'Lakers'
+
+
 # This setting configures which "profile" dbt uses for this project.
 profile: 'DWH_PROJECT'
 
@@ -23,7 +28,8 @@ clean-targets:         # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
 
-
+on-run-start: "insert into PC_DBT_DB.DBT_OYAZICI.dbt_audits (audit_type) values ('run_start'); commit;"
+on-run-end: "insert into PC_DBT_DB.DBT_OYAZICI.dbt_audits (audit_type) values ('run_end'); commit;"
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
 
@@ -31,8 +37,12 @@ clean-targets:         # directories to be removed by `dbt clean`
 # directory as views. These settings can be overridden in the individual model
 # files using the `{{ config(...) }}` macro.
 models:
+  pre-hook: "INSERT INTO PC_DBT_DB.DBT_OYAZICI.dbt_audits (audit_type) SELECT 'dbt start building ' || REVERSE(SUBSTRING(REVERSE('{{ this }}'), 1, POSITION('.' IN REVERSE('{{ this }}')) - 1)) AS audit_type FROM dual; commit;"
+  post-hook: "INSERT INTO PC_DBT_DB.DBT_OYAZICI.dbt_audits (audit_type) SELECT 'dbt end building ' || REVERSE(SUBSTRING(REVERSE('{{ this }}'), 1, POSITION('.' IN REVERSE('{{ this }}')) - 1)) AS audit_type FROM dual; commit;"
   DWH_PROJECT:
     # Config indicated by + and applies to all files under models/staging/
     staging:
       +materialized: view
       +schema: staging
+      example:
+        +tags: example
